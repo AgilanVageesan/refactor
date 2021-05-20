@@ -32,3 +32,16 @@ steps:
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+
+- task: SonarCloudPrepare@1
+  inputs:
+    SonarCloud: 'Sonar Cloud Connect'
+    organization: 'agilanvageesan'
+    scannerMode: 'MSBuild'
+    projectKey: 'AgilanVageesan_refactor'
+    extraProperties: 'sonar.cs.opencover.reportsPaths={$(System.DefaultWorkingDirectory)}\coverage.opencover.xml'
+    
+
+- task: test cover
+  inputs: dotnet test Refactoring.sln /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=$(Build.SourcesDirectory)/coverage/
+  copy $(Build.SourcesDirectory)\coverage\coverage.opencover.xml {$(System.DefaultWorkingDirectory)}\coverage.opencover.xml
